@@ -37,3 +37,8 @@ def plot_images(images):
         ax = plt.subplot(1, len(images), i + 1)
         plt.imshow(images[i])
         plt.axis("off")
+
+
+images = stable_diffusion_image_generator(prompt)
+sr_image = esrgan_upscaler(images[0])
+plot_images(sr_image)
