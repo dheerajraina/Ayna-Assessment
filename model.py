@@ -7,6 +7,7 @@ import os
 import time
 from PIL import Image
 import tensorflow_hub as hub
+import numpy as np
 os.environ["TFHUB_DOWNLOAD_PROGRESS"] = "True"
 
 prompt = "Color picture of a beautiful scandinavian girl in high resolution"
@@ -19,14 +20,20 @@ def stable_diffusion_image_generator(prompt: str, batch_size=1):
     return images
 
 
+def save_image(image_array: np.array, output_name: str):
+    image = Image.fromarray(image_array)
+    image.save(f"{output_name}.jpg")
+
+
 def esrgan_upscaler(org_image):
     model_path = ESRGAN_SAVED_MODEL_PATH
     image = tf.cast(org_image, tf.float32)
-    org_image = tf.expand_dims(org_image, 0)
+    image = tf.expand_dims(image, 0)
     srmodel = hub.load(model_path)
-    sr_image = srmodel(org_image)
+    sr_image = srmodel(image)
     sr_image = tf.squeeze(sr_image)
     sr_image = tf.cast(sr_image, tf.uint8)
+    sr_image = np.array(sr_image)
 
     return sr_image
 
